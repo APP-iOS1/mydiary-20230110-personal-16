@@ -21,11 +21,11 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct DiaryApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    @StateObject var authStore: AuthStore = AuthStore()
+    @StateObject var avocadoStore: AvocadoStore = AvocadoStore()
     var body: some Scene {
         WindowGroup {
             ContentView()
-            .environmentObject(authStore)
+            .environmentObject(avocadoStore)
         }
     }
 }

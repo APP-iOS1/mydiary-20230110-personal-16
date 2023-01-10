@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpView_Two: View {
-    @EnvironmentObject var authStore: AuthStore
+    @EnvironmentObject var avocadoStore: AvocadoStore
 
     @State var textFieldSignUpID: String = ""
     @State var textFieldSignUpNickname: String = ""
@@ -36,7 +36,7 @@ struct SignUpView_Two: View {
 //    // 이메일 중복을 검사하는 함수입니다.
 //    func checkEmailDuplicated() {
 //        Task {
-//            if await authStore.isEmailDuplicated(currentUserEmail: textFieldSignUpID) {
+//            if await avocadoStore.isEmailDuplicated(currentUserEmail: textFieldSignUpID) {
 //                // 이메일이 중복될 경우
 //
 //            } else {
@@ -53,7 +53,7 @@ struct SignUpView_Two: View {
             }
             .onChange(of: textFieldSignUpID, perform: { email in
                 Task {
-                    if await authStore.isEmailDuplicated(currentUserEmail: email) {
+                    if await avocadoStore.isEmailDuplicated(currentUserEmail: email) {
                         isEmailDuplicated = false
                     } else {
                         isEmailDuplicated = true
@@ -71,7 +71,7 @@ struct SignUpView_Two: View {
             }
             .onChange(of: textFieldSignUpNickname, perform: { nickname in
                 Task {
-                    if await authStore.isNicknameDuplicated(currentUserNickname: nickname) {
+                    if await avocadoStore.isNicknameDuplicated(currentUserNickname: nickname) {
                         isNicknameDuplicated = false
                     } else {
                         isNicknameDuplicated = true
@@ -110,7 +110,7 @@ struct SignUpView_Two_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             SignUpView_Two(navStack: .constant(NavigationPath()))
-                .environmentObject(AuthStore())
+                .environmentObject(AvocadoStore())
 
         }
     }

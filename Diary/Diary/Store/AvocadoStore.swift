@@ -1,5 +1,5 @@
 //
-//  AuthStore.swift
+//  AvocadoStore.swift
 //  Diary
 //
 //  Created by TAEHYOUNG KIM on 2023/01/10.
@@ -21,11 +21,12 @@ struct User {
     var userNickname: String
 }
 
-class AuthStore: ObservableObject {
+class AvocadoStore: ObservableObject {
     @Published var errorMessage = ""
     @Published var loginRequestState: LoginRequestState = .notLoggedIn
     @Published var currentUser: User?
-
+    @Published var currentStudy: Avocado?
+    @Published var avocados: [Avocado] = []
     let database = Firestore.firestore()
     let authentification = Auth.auth()
     
@@ -156,6 +157,138 @@ class AuthStore: ObservableObject {
                 }
             }
         })
+    }
+    
+    func createAvocadoPlan(avocado: Avocado) {
+            database.collection("user")
+            .document(currentUser!.id)
+                .collection("currentAvocado")
+                .document(avocado.id)
+                .setData([
+                    "id": avocado.id,
+                    "goalCount": avocado.goalCount,
+                    "studyTimePerAvocado": avocado.studyTimePerAvocado,
+                    "breakTimePerAvocado": avocado.breakTimePerAvocado,
+                    "whatToDo": avocado.whatToDo
+                ]) { err in
+                    if let err = err {
+                        print("create avocado plan erorr: \(err)")
+                    } else {
+                        print("create avocado plan 완료")
+                        self.currentStudy = Avocado(id: avocado.id, goalCount: avocado.goalCount, studyTimePerAvocado: avocado.studyTimePerAvocado, breakTimePerAvocado: avocado.breakTimePerAvocado, whatToDo: avocado.whatToDo)
+                    }
+                }
+        }
+    
+    func createAvocadoAtList(avocado: Avocado) {
+            database.collection("user")
+            .document(currentUser!.id)
+                .collection("avocados")
+                .document(avocado.id)
+                .setData([
+                    "id": avocado.id,
+                    "goalCount": avocado.goalCount,
+                    "studyTimePerAvocado": avocado.studyTimePerAvocado,
+                    "breakTimePerAvocado": avocado.breakTimePerAvocado,
+                    "whatToDo": avocado.whatToDo,
+                    "whatILearned": avocado.whatILearned,
+                    "whatToDid": avocado.whatToDid,
+                    "doneCount": avocado.doneCount
+                ]) { err in
+                    if let err = err {
+                        print("create avocado plan erorr: \(err)")
+                    } else {
+                        print("create avocado plan 완료")
+                        self.currentStudy = nil
+                    }
+                }
+        }
+    
+    func fetchAvocadoAtList() {
+        database.collection("user").document(currentUser!.id).collection("avocados")
+            .getDocuments { snapshot, error in
+                self.avocados.removeAll()
+            if let snapshot {
+                
+                for document in snapshot.documents {
+                    let id : String = document.documentID
+                    let docData = document.data()
+                    
+                    let goalCount: Int = docData["goalCount"] as? Int ?? 0
+                    let doneCount: Int? = docData["doneCount"] as? Int ?? 0
+                    let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
+                    let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
+                    let whatToDo: String = docData["whatToDo"] as? String ?? ""
+                    let whatILearned: String = docData["whatILearned"] as? String ?? ""
+                    let whatToDid: String = docData["whatToDid"] as? String ?? ""
+
+                    
+                    self.avocados.append(Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount, whatToDid: whatToDid, whatILearned: whatILearned)
+                    )
+                }
+                
+                
+            }
+        }
+    }
+    
+    func updateDoneCount(doneCount: Int) {
+            database.collection("user")
+            .document(currentUser!.id)
+                .collection("currentAvocado")
+                .document(currentStudy!.id)
+                .updateData([
+                    "doneCount": doneCount
+                ]) { err in
+                    if let err = err {
+                        print("update doneCount erorr: \(err)")
+                    } else {
+                        print("update doneCount 완료")
+                        self.currentStudy?.doneCount = doneCount
+                    }
+                }
+        }
+    
+    func updateFinishInfo(whatILearned: String, whatToDid: String) {
+            database.collection("user")
+            .document(currentUser!.id)
+                .collection("currentAvocado")
+                .document(currentStudy!.id)
+                .updateData([
+                    "whatILearned": whatILearned,
+                    "whatToDid": whatToDid
+                ]) { err in
+                    if let err = err {
+                        print("update finishInfo erorr: \(err)")
+                    } else {
+                        print("update finishInfo 완료")
+                        self.currentStudy?.whatToDid = whatToDid
+                        self.currentStudy?.whatILearned = whatILearned
+                    }
+                }
+        }
+    func fetchAvocado() {
+        database.collection("user").document(currentUser!.id).collection("currentAvocado")
+            .getDocuments { snapshot, error in
+            if let snapshot {
+                
+                for document in snapshot.documents {
+                    let id : String = document.documentID
+                    let docData = document.data()
+                    
+                    let goalCount: Int = docData["goalCount"] as? Int ?? 0
+                    let doneCount: Int? = docData["doneCount"] as? Int ?? 0
+                    let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
+                    let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
+                    let whatToDo: String = docData["whatToDo"] as? String ?? ""
+                    
+                    self.currentStudy = Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount)
+                    print(self.currentUser!)
+                }
+                
+                
+            }
+        }
     }
     
     // MARK: - 회원정보 업데이트 (주소, 연락처)

@@ -94,7 +94,7 @@ struct SignUpView_One_Previews: PreviewProvider {
         Group {
             NavigationStack {
                 SignUpView_One(navStack: .constant(NavigationPath()))
-                    .environmentObject(AuthStore())
+                    .environmentObject(AvocadoStore())
 
                 
             }

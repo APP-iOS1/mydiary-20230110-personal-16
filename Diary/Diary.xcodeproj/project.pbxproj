@@ -21,8 +21,12 @@
 		76BA7727296D0695000E8829 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 76BA7726296D0695000E8829 /* FirebaseDatabase */; };
 		76BA7729296D0695000E8829 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 76BA7728296D0695000E8829 /* FirebaseFirestore */; };
 		76BA772B296D0695000E8829 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 76BA772A296D0695000E8829 /* FirebaseFirestoreSwift */; };
-		76BA772D296D0746000E8829 /* AuthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA772C296D0746000E8829 /* AuthStore.swift */; };
-		76BA7731296D3E3E000E8829 /* WriteDiaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7730296D3E3E000E8829 /* WriteDiaryView.swift */; };
+		76BA772D296D0746000E8829 /* AvocadoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA772C296D0746000E8829 /* AvocadoStore.swift */; };
+		76BA7731296D3E3E000E8829 /* AddAvocado.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7730296D3E3E000E8829 /* AddAvocado.swift */; };
+		76BA7733296DAE52000E8829 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7732296DAE52000E8829 /* Model.swift */; };
+		76BA7735296DAEC8000E8829 /* AvocadoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7734296DAEC8000E8829 /* AvocadoList.swift */; };
+		76BA7737296DB6BB000E8829 /* OngoingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7736296DB6BB000E8829 /* OngoingView.swift */; };
+		76BA7739296DC595000E8829 /* FinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7738296DC595000E8829 /* FinishView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,8 +41,12 @@
 		76BA771C296CF834000E8829 /* SignUpView_Three.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView_Three.swift; sourceTree = "<group>"; };
 		76BA771E296CF918000E8829 /* Modifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Modifier.swift; sourceTree = "<group>"; };
 		76BA7721296D05B7000E8829 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		76BA772C296D0746000E8829 /* AuthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthStore.swift; sourceTree = "<group>"; };
-		76BA7730296D3E3E000E8829 /* WriteDiaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteDiaryView.swift; sourceTree = "<group>"; };
+		76BA772C296D0746000E8829 /* AvocadoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvocadoStore.swift; sourceTree = "<group>"; };
+		76BA7730296D3E3E000E8829 /* AddAvocado.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddAvocado.swift; sourceTree = "<group>"; };
+		76BA7732296DAE52000E8829 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		76BA7734296DAEC8000E8829 /* AvocadoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvocadoList.swift; sourceTree = "<group>"; };
+		76BA7736296DB6BB000E8829 /* OngoingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OngoingView.swift; sourceTree = "<group>"; };
+		76BA7738296DC595000E8829 /* FinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +85,11 @@
 			children = (
 				76BA7706296CEAAA000E8829 /* DiaryApp.swift */,
 				76BA7708296CEAAA000E8829 /* ContentView.swift */,
-				76BA7730296D3E3E000E8829 /* WriteDiaryView.swift */,
+				76BA7734296DAEC8000E8829 /* AvocadoList.swift */,
+				76BA7732296DAE52000E8829 /* Model.swift */,
+				76BA7730296D3E3E000E8829 /* AddAvocado.swift */,
+				76BA7736296DB6BB000E8829 /* OngoingView.swift */,
+				76BA7738296DC595000E8829 /* FinishView.swift */,
 				76BA771E296CF918000E8829 /* Modifier.swift */,
 				76BA772E296D38B4000E8829 /* LoginView */,
 				76BA772F296D38F8000E8829 /* Store */,
@@ -110,7 +122,7 @@
 		76BA772F296D38F8000E8829 /* Store */ = {
 			isa = PBXGroup;
 			children = (
-				76BA772C296D0746000E8829 /* AuthStore.swift */,
+				76BA772C296D0746000E8829 /* AvocadoStore.swift */,
 			);
 			path = Store;
 			sourceTree = "<group>";
@@ -196,13 +208,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				76BA7719296CF4BE000E8829 /* SignUpView_One.swift in Sources */,
-				76BA772D296D0746000E8829 /* AuthStore.swift in Sources */,
+				76BA772D296D0746000E8829 /* AvocadoStore.swift in Sources */,
 				76BA771D296CF834000E8829 /* SignUpView_Three.swift in Sources */,
 				76BA7715296CED8E000E8829 /* LoginView.swift in Sources */,
+				76BA7737296DB6BB000E8829 /* OngoingView.swift in Sources */,
 				76BA7709296CEAAA000E8829 /* ContentView.swift in Sources */,
-				76BA7731296D3E3E000E8829 /* WriteDiaryView.swift in Sources */,
+				76BA7733296DAE52000E8829 /* Model.swift in Sources */,
+				76BA7731296D3E3E000E8829 /* AddAvocado.swift in Sources */,
+				76BA7735296DAEC8000E8829 /* AvocadoList.swift in Sources */,
 				76BA7707296CEAAA000E8829 /* DiaryApp.swift in Sources */,
 				76BA771B296CF712000E8829 /* SignUpView_Two.swift in Sources */,
+				76BA7739296DC595000E8829 /* FinishView.swift in Sources */,
 				76BA771F296CF918000E8829 /* Modifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

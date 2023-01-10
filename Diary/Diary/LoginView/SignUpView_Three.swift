@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SignUpView_Three: View {
-    @EnvironmentObject var authStore: AuthStore
+    @EnvironmentObject var avocadoStore: AvocadoStore
 
     @State var textFieldSignUpPW: String = ""
     @State var textFieldSignUpCheckPW: String = ""
@@ -21,7 +21,7 @@ struct SignUpView_Three: View {
         VStack {
             Text("비밀번호 입력")
             TextField(text: $textFieldSignUpPW) {
-                Text("아이디 (이메일) 입력")
+                Text("비밀번호 입력")
             }
             .padding()
             .border(.secondary)
@@ -50,7 +50,7 @@ struct SignUpView_Three: View {
             Button {
                 print("가입 완료")
                 Task {
-                    await authStore.signUp(email: textFieldSignUpID, password: textFieldSignUpPW, nickname: textFieldSignUpNickname)
+                    await avocadoStore.signUp(email: textFieldSignUpID, password: textFieldSignUpPW, nickname: textFieldSignUpNickname)
                 }
                 navStack = .init()
             } label: {
@@ -80,7 +80,7 @@ struct PasswordRuleComponent: View {
 struct SignUpView_Three_Previews: PreviewProvider {
     static var previews: some View {
         SignUpView_Three(textFieldSignUpID: .constant(""), textFieldSignUpNickname: .constant(""), navStack: .constant(NavigationPath()))
-            .environmentObject(AuthStore())
+            .environmentObject(AvocadoStore())
 
     }
 }

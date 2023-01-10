@@ -4,7 +4,7 @@ import SwiftUI
 
 
 struct LoginView: View {
-    @EnvironmentObject var authStore: AuthStore
+    @EnvironmentObject var avocadoStore: AvocadoStore
     @State var textFieldLoginID: String = ""
     @State var textFieldLoginPW: String = ""
     @Binding var isNotLogined: Bool
@@ -15,8 +15,8 @@ struct LoginView: View {
     
     func login() {
         Task {
-            await authStore.login(withEmail: textFieldLoginID, withPassword: textFieldLoginPW)
-            if authStore.loginRequestState == .loggedIn {
+            await avocadoStore.login(withEmail: textFieldLoginID, withPassword: textFieldLoginPW)
+            if avocadoStore.loginRequestState == .loggedIn {
                 isNotLogined.toggle()
             }
         }
@@ -100,6 +100,6 @@ struct LoginView: View {
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(isNotLogined: .constant(false))
-            .environmentObject(AuthStore())
+            .environmentObject(AvocadoStore())
     }
 }
