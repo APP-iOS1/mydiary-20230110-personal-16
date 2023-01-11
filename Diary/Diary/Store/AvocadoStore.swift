@@ -7,8 +7,10 @@
 
 import Foundation
 import Firebase
-
-
+import FirebaseAuth
+import FirebaseFirestore
+import FirebaseStorage
+import SwiftUI
 
 enum LoginRequestState {
     case loggedIn
@@ -23,12 +25,54 @@ struct User {
 
 class AvocadoStore: ObservableObject {
     @Published var errorMessage = ""
-    @Published var loginRequestState: LoginRequestState = .notLoggedIn
-    @Published var currentUser: User?
+    @Published var loginRequestState: LoginRequestState?
+    @Published var currentLocalUser: User?
     @Published var currentStudy: Avocado?
     @Published var avocados: [Avocado] = []
+    
+
+    
     let database = Firestore.firestore()
     let authentification = Auth.auth()
+    let storage = Storage.storage()
+    
+    
+    func uploadImage(image: UIImage?) {
+        guard let uid = authentification.currentUser?.uid
+        else {return}
+        let ref = storage.reference().child("\(uid)/\(currentStudy?.id ?? "")")
+        guard let imageData = image?.jpegData(compressionQuality: 0.5) else {return}
+        ref.putData(imageData, metadata: nil) { metadata, err in
+            if let err = err {
+                self.errorMessage = "Failed to push image to Storage: \(err)"
+                return
+            }
+            ref.downloadURL { url, err in
+                if let err = err {
+                    self.errorMessage = "Failed to retrieve downloadURL: \(err)"
+                }
+                self.errorMessage = "Successfully stored image with url: \(url?.absoluteString ?? "")"
+                print(url)
+            }
+        }
+    }
+    func downloadImage(avocado: Avocado) {
+        guard let uid = authentification.currentUser?.uid
+        else {return}
+        
+        let ref = storage.reference().child("\(uid)/\(avocado.id)")
+                
+        // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
+        ref.getData(maxSize: 1 * 1024 * 1024) { data, error in
+            if let error = error {
+                self.errorMessage = "Failed to download image from Storage: \(error)"
+                return
+            } else {
+                // Data for "images/island.jpg" is returned
+                let image = UIImage(data: data!)
+            }
+        }
+    }
     
     
     
@@ -109,14 +153,14 @@ class AvocadoStore: ObservableObject {
     // MARK: - Login
     @MainActor
     public func login(withEmail email: String, withPassword password: String) async -> Void {
-
+        
         do {
             loginRequestState = .loggedIn
             try await authentification.signIn(withEmail: email, password: password)
             // 현재 로그인 한 유저의 정보 담아주는 코드
             // 변경이 필요함!
             let userNickname = await requestUserNickname(uid: authentification.currentUser?.uid ?? "")
-            self.currentUser = User(id: self.authentification.currentUser?.uid ?? "", userEmail: email, userNickname: userNickname )
+            self.currentLocalUser = User(id: self.authentification.currentUser?.uid ?? "", userEmail: email, userNickname: userNickname )
             print("userNickname: \(userNickname)")
         } catch {
             loginRequestState = .notLoggedIn
@@ -132,7 +176,7 @@ class AvocadoStore: ObservableObject {
             loginRequestState = .notLoggedIn
             
             // 로컬에 있는 User 구조체의 객체를 날림
-            self.currentUser = nil
+            self.currentLocalUser = nil
         } catch {
             dump("DEBUG : LOG OUT FAILED \(error.localizedDescription)")
         }
@@ -144,12 +188,12 @@ class AvocadoStore: ObservableObject {
     ///  - Returns : currentUser의 userNickname
     private func requestUserNickname(uid: String) async -> String {
         var retValue = ""
-//        print("requestUserNickname 1")
+        //        print("requestUserNickname 1")
         return await withCheckedContinuation({ continuation in
             database.collection("user").document(uid).getDocument { (document, error) in
                 if let document = document, document.exists {
                     retValue = document.get("userNickname") as! String
-//                    print("requestUserNickname 2: \(retValue)")
+                    //                    print("requestUserNickname 2: \(retValue)")
                     continuation.resume(returning: retValue)
                 } else {
                     print("2-")
@@ -160,135 +204,136 @@ class AvocadoStore: ObservableObject {
     }
     
     func createAvocadoPlan(avocado: Avocado) {
-            database.collection("user")
-            .document(currentUser!.id)
-                .collection("currentAvocado")
-                .document(avocado.id)
-                .setData([
-                    "id": avocado.id,
-                    "goalCount": avocado.goalCount,
-                    "studyTimePerAvocado": avocado.studyTimePerAvocado,
-                    "breakTimePerAvocado": avocado.breakTimePerAvocado,
-                    "whatToDo": avocado.whatToDo
-                ]) { err in
-                    if let err = err {
-                        print("create avocado plan erorr: \(err)")
-                    } else {
-                        print("create avocado plan 완료")
-                        self.currentStudy = Avocado(id: avocado.id, goalCount: avocado.goalCount, studyTimePerAvocado: avocado.studyTimePerAvocado, breakTimePerAvocado: avocado.breakTimePerAvocado, whatToDo: avocado.whatToDo)
-                    }
+        database.collection("user")
+            .document(currentLocalUser!.id)
+            .collection("currentAvocado")
+            .document(avocado.id)
+            .setData([
+                "id": avocado.id,
+                "goalCount": avocado.goalCount,
+                "studyTimePerAvocado": avocado.studyTimePerAvocado,
+                "breakTimePerAvocado": avocado.breakTimePerAvocado,
+                "whatToDo": avocado.whatToDo
+            ]) { err in
+                if let err = err {
+                    print("create avocado plan erorr: \(err)")
+                } else {
+                    print("create avocado plan 완료")
+                    self.currentStudy = Avocado(id: avocado.id, goalCount: avocado.goalCount, studyTimePerAvocado: avocado.studyTimePerAvocado, breakTimePerAvocado: avocado.breakTimePerAvocado, whatToDo: avocado.whatToDo)
                 }
-        }
+            }
+    }
     
-    func createAvocadoAtList(avocado: Avocado) {
-            database.collection("user")
-            .document(currentUser!.id)
-                .collection("avocados")
-                .document(avocado.id)
-                .setData([
-                    "id": avocado.id,
-                    "goalCount": avocado.goalCount,
-                    "studyTimePerAvocado": avocado.studyTimePerAvocado,
-                    "breakTimePerAvocado": avocado.breakTimePerAvocado,
-                    "whatToDo": avocado.whatToDo,
-                    "whatILearned": avocado.whatILearned,
-                    "whatToDid": avocado.whatToDid,
-                    "doneCount": avocado.doneCount
-                ]) { err in
-                    if let err = err {
-                        print("create avocado plan erorr: \(err)")
-                    } else {
-                        print("create avocado plan 완료")
-                        self.currentStudy = nil
-                    }
-                }
-        }
     
     func fetchAvocadoAtList() {
-        database.collection("user").document(currentUser!.id).collection("avocados")
+        database.collection("user").document(currentLocalUser?.id ?? "").collection("avocados")
             .getDocuments { snapshot, error in
                 self.avocados.removeAll()
-            if let snapshot {
-                
-                for document in snapshot.documents {
-                    let id : String = document.documentID
-                    let docData = document.data()
+                if let snapshot {
                     
-                    let goalCount: Int = docData["goalCount"] as? Int ?? 0
-                    let doneCount: Int? = docData["doneCount"] as? Int ?? 0
-                    let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
-                    let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
-                    let whatToDo: String = docData["whatToDo"] as? String ?? ""
-                    let whatILearned: String = docData["whatILearned"] as? String ?? ""
-                    let whatToDid: String = docData["whatToDid"] as? String ?? ""
+                    for document in snapshot.documents {
+                        let id : String = document.documentID
+                        let docData = document.data()
+                        
+                        let goalCount: Int = docData["goalCount"] as? Int ?? 0
+                        let doneCount: Int? = docData["doneCount"] as? Int ?? 0
+                        let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
+                        let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
+                        let whatToDo: String = docData["whatToDo"] as? String ?? ""
+                        let whatILearned: String = docData["whatILearned"] as? String ?? ""
+                        let whatToDid: String = docData["whatToDid"] as? String ?? ""
 
+                        self.avocados.append(Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount, whatToDid: whatToDid, whatILearned: whatILearned)
+                        )
+                    }
                     
-                    self.avocados.append(Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount, whatToDid: whatToDid, whatILearned: whatILearned)
-                    )
+                    
                 }
-                
-                
             }
-        }
     }
     
     func updateDoneCount(doneCount: Int) {
-            database.collection("user")
-            .document(currentUser!.id)
-                .collection("currentAvocado")
-                .document(currentStudy!.id)
-                .updateData([
-                    "doneCount": doneCount
-                ]) { err in
-                    if let err = err {
-                        print("update doneCount erorr: \(err)")
-                    } else {
-                        print("update doneCount 완료")
-                        self.currentStudy?.doneCount = doneCount
-                    }
+        database.collection("user")
+            .document(currentLocalUser!.id)
+            .collection("currentAvocado")
+            .document(currentStudy!.id)
+            .updateData([
+                "doneCount": doneCount
+            ]) { err in
+                if let err = err {
+                    print("update doneCount erorr: \(err)")
+                } else {
+                    print("update doneCount 완료")
+                    self.currentStudy?.doneCount = doneCount
                 }
-        }
+            }
+    }
     
     func updateFinishInfo(whatILearned: String, whatToDid: String) {
-            database.collection("user")
-            .document(currentUser!.id)
-                .collection("currentAvocado")
-                .document(currentStudy!.id)
-                .updateData([
-                    "whatILearned": whatILearned,
-                    "whatToDid": whatToDid
-                ]) { err in
-                    if let err = err {
-                        print("update finishInfo erorr: \(err)")
-                    } else {
-                        print("update finishInfo 완료")
-                        self.currentStudy?.whatToDid = whatToDid
-                        self.currentStudy?.whatILearned = whatILearned
-                    }
+        database.collection("user")
+            .document(currentLocalUser!.id)
+            .collection("currentAvocado")
+            .document(currentStudy!.id)
+            .updateData([
+                "whatILearned": whatILearned,
+                "whatToDid": whatToDid
+            ]) { err in
+                if let err = err {
+                    print("update finishInfo erorr: \(err)")
+                } else {
+                    print("update finishInfo 완료")
+                    self.currentStudy?.whatToDid = whatToDid
+                    self.currentStudy?.whatILearned = whatILearned
                 }
-        }
-    func fetchAvocado() {
-        database.collection("user").document(currentUser!.id).collection("currentAvocado")
-            .getDocuments { snapshot, error in
-            if let snapshot {
-                
-                for document in snapshot.documents {
-                    let id : String = document.documentID
-                    let docData = document.data()
-                    
-                    let goalCount: Int = docData["goalCount"] as? Int ?? 0
-                    let doneCount: Int? = docData["doneCount"] as? Int ?? 0
-                    let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
-                    let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
-                    let whatToDo: String = docData["whatToDo"] as? String ?? ""
-                    
-                    self.currentStudy = Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount)
-                    print(self.currentUser!)
-                }
-                
-                
             }
-        }
+    }
+    func createAvocadoAtList(avocado: Avocado, whatILearned: String, whatToDid: String) {
+        database.collection("user")
+            .document(currentLocalUser!.id)
+            .collection("avocados")
+            .document(avocado.id)
+            .setData([
+                "id": avocado.id,
+                "goalCount": avocado.goalCount,
+                "studyTimePerAvocado": avocado.studyTimePerAvocado,
+                "breakTimePerAvocado": avocado.breakTimePerAvocado,
+                "whatToDo": avocado.whatToDo,
+                "whatILearned": whatILearned,
+                "whatToDid": whatToDid,
+                "doneCount": avocado.doneCount ?? 0
+            ]) { err in
+                if let err = err {
+                    print("create avocado plan erorr: \(err)")
+                } else {
+                    print("create avocado plan 완료")
+                }
+            }
+        database.collection("user").document(currentLocalUser!.id)
+            .collection("currentAvocado").document(currentStudy!.id).delete()
+        self.currentStudy = nil
+    }
+    func fetchAvocado() {
+        database.collection("user").document(currentLocalUser!.id).collection("currentAvocado")
+            .getDocuments { snapshot, error in
+                if let snapshot {
+                    
+                    for document in snapshot.documents {
+                        let id : String = document.documentID
+                        let docData = document.data()
+                        
+                        let goalCount: Int = docData["goalCount"] as? Int ?? 0
+                        let doneCount: Int? = docData["doneCount"] as? Int ?? 0
+                        let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
+                        let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
+                        let whatToDo: String = docData["whatToDo"] as? String ?? ""
+                        
+                        self.currentStudy = Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount)
+                        print(self.currentLocalUser!)
+                    }
+                    
+                    
+                }
+            }
     }
     
     // MARK: - 회원정보 업데이트 (주소, 연락처)
@@ -297,88 +342,112 @@ class AvocadoStore: ObservableObject {
     ///  - Parameter user : 로그인한 유저의 객체 (User)
     ///  - firestore 반영: updateData 메소드를 이용하여 firestore에 정보를 업데이트한다.
     ///  - 로컬반영: 로컬에 있는 currentUser 객체를 재생성(초기화)하여 정보를 업데이트함
-//    func updateUserInfo(userAddress: String, phoneNumber: String, user: User) {
-//        database.collection("user")
-//            .document(user.id).updateData([
-//                "userAddress" : userAddress,
-//                "phoneNumber" : phoneNumber
-//            ]) { err in
-//                if let err = err {
-//                    print("회원정보 수정 오류: \(err)")
-//                } else {
-//                    print("회원정보 수정 완료")
-//                    self.currentUser = User(id: self.authentification.currentUser?.uid ?? "", userEmail: user.userEmail, userNickname: user.userNickname, userAddress: userAddress, phoneNumber: phoneNumber )
-//                }
-//            }
-//    }
+    //    func updateUserInfo(userAddress: String, phoneNumber: String, user: User) {
+    //        database.collection("user")
+    //            .document(user.id).updateData([
+    //                "userAddress" : userAddress,
+    //                "phoneNumber" : phoneNumber
+    //            ]) { err in
+    //                if let err = err {
+    //                    print("회원정보 수정 오류: \(err)")
+    //                } else {
+    //                    print("회원정보 수정 완료")
+    //                    self.currentUser = User(id: self.authentification.currentUser?.uid ?? "", userEmail: user.userEmail, userNickname: user.userNickname, userAddress: userAddress, phoneNumber: phoneNumber )
+    //                }
+    //            }
+    //    }
     
     // MARK: - FireStore의 유저정보 fetch
     ///  - Parameter user : 로그인한 유저의 객체 (User)
     ///  - 로그인 시 firestore에 저장된 유저 정보를 currentUser에 할당한다.
-//    func fetchUserInfo(user: User) {
-//        database.collection("user").getDocuments { snapshot, error in
-//            if let snapshot {
-//
-//                for document in snapshot.documents {
-//                    let id : String = document.documentID
-//                    let docData = document.data()
-//
-//                    if id == user.id {
-//
-//                        let userAddress: String = docData["userAddress"] as? String ?? ""
-//                        let phoneNumber: String = docData["phoneNumber"] as? String ?? ""
-//                        let userNickname: String = docData["userNickname"] as? String ?? ""
-//                        let userEmail: String = docData["userEmail"] as? String ?? ""
-//
-//                        self.currentUser = User(id: id, userEmail: userEmail, userNickname: userNickname, userAddress: userAddress, phoneNumber: phoneNumber)
-//                        print(self.currentUser!)
-//                    }
-//                }
-//
-//            }
-//        }
-//    }
-//    // MARK: - 비밀번호 업데이트
-//    ///  - Parameter password : 변경하려는 비밀번호
-//    ///  - Auth에 접근하여 비밀번호를 업데이트한다
-//    func updatePassword(password: String) {
-//        authentification.currentUser?.updatePassword(to: password) { err in
-//            if let err = err {
-//                print("password update error: \(err)")
-//            } else {
-//                print("password update")
-//            }
-//        }
-//    }
-
-    // MARK: - 이메일 업데이트
-//    func updateEmail(email: String) {
-//        authentification.currentUser?.updateEmail(to: email) { err in
-//            if let err = err {
-//                print("email update error: \(err)")
-//            } else {
-//                print("email update")
-//            }
-//        }
-//    }
+    //    func fetchUserInfo(user: User) {
+    //        database.collection("user").getDocuments { snapshot, error in
+    //            if let snapshot {
+    //
+    //                for document in snapshot.documents {
+    //                    let id : String = document.documentID
+    //                    let docData = document.data()
+    //
+    //                    if id == user.id {
+    //
+    //                        let userAddress: String = docData["userAddress"] as? String ?? ""
+    //                        let phoneNumber: String = docData["phoneNumber"] as? String ?? ""
+    //                        let userNickname: String = docData["userNickname"] as? String ?? ""
+    //                        let userEmail: String = docData["userEmail"] as? String ?? ""
+    //
+    //                        self.currentUser = User(id: id, userEmail: userEmail, userNickname: userNickname, userAddress: userAddress, phoneNumber: phoneNumber)
+    //                        print(self.currentUser!)
+    //                    }
+    //                }
+    //
+    //            }
+    //        }
+    //    }
+    //    // MARK: - 비밀번호 업데이트
+    //    ///  - Parameter password : 변경하려는 비밀번호
+    //    ///  - Auth에 접근하여 비밀번호를 업데이트한다
+    //    func updatePassword(password: String) {
+    //        authentification.currentUser?.updatePassword(to: password) { err in
+    //            if let err = err {
+    //                print("password update error: \(err)")
+    //            } else {
+    //                print("password update")
+    //            }
+    //        }
+    //    }
     
-//    // MARK: - 로그인 메소드를 사용하여 비밀번호 체크
-//    ///  - Parameter email : 로그인 시 사용하는 이메일
-//    ///  - Parameter password : 로그인 시 사용하는 비밀번호
-//    ///  - Returns : 로그인 성공 유무에 따라 Bool값을 return
-//    public func reAuthLoginIn(withEmail email: String, withPassword password: String) async -> Bool {
-//        print("email: \(email), pw: \(password)")
-//
-//        do {
-//            try await authentification.signIn(withEmail: email, password: password)
-//
-//            return true
-//        } catch(let error) {
-//            dump("error: \(error)")
-//
-//            return false
-//        }
-//    }
-//
-//
+    // MARK: - 이메일 업데이트
+    //    func updateEmail(email: String) {
+    //        authentification.currentUser?.updateEmail(to: email) { err in
+    //            if let err = err {
+    //                print("email update error: \(err)")
+    //            } else {
+    //                print("email update")
+    //            }
+    //        }
+    //    }
+    
+    //    // MARK: - 로그인 메소드를 사용하여 비밀번호 체크
+    //    ///  - Parameter email : 로그인 시 사용하는 이메일
+    //    ///  - Parameter password : 로그인 시 사용하는 비밀번호
+    //    ///  - Returns : 로그인 성공 유무에 따라 Bool값을 return
+    //    public func reAuthLoginIn(withEmail email: String, withPassword password: String) async -> Bool {
+    //        print("email: \(email), pw: \(password)")
+    //
+    //        do {
+    //            try await authentification.signIn(withEmail: email, password: password)
+    //
+    //            return true
+    //        } catch(let error) {
+    //            dump("error: \(error)")
+    //
+    //            return false
+    //        }
+    //    }
+    //
+    //
 }
+
+
+
+
+//// Points to the root reference
+//let storageRef = Storage.storage().reference()
+//
+//// Points to "images"
+//let imagesRef = storageRef.child("images")
+//
+//// Points to "images/space.jpg"
+//// Note that you can use variables to create child values
+//let fileName = "space.jpg"
+//let spaceRef = imagesRef.child(fileName)
+//
+//// File path is "images/space.jpg"
+//let path = spaceRef.fullPath
+//
+//// File name is "space.jpg"
+//let name = spaceRef.name
+//
+//// Points to "images"
+//let images = spaceRef.parent()
+//

@@ -27,6 +27,8 @@
 		76BA7735296DAEC8000E8829 /* AvocadoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7734296DAEC8000E8829 /* AvocadoList.swift */; };
 		76BA7737296DB6BB000E8829 /* OngoingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7736296DB6BB000E8829 /* OngoingView.swift */; };
 		76BA7739296DC595000E8829 /* FinishView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7738296DC595000E8829 /* FinishView.swift */; };
+		76E1E850296E38FF001DEFE3 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 76E1E84F296E38FF001DEFE3 /* FirebaseStorage */; };
+		76E1E852296E3EC6001DEFE3 /* PhotosPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76E1E851296E3EC6001DEFE3 /* PhotosPickerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +49,7 @@
 		76BA7734296DAEC8000E8829 /* AvocadoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvocadoList.swift; sourceTree = "<group>"; };
 		76BA7736296DB6BB000E8829 /* OngoingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OngoingView.swift; sourceTree = "<group>"; };
 		76BA7738296DC595000E8829 /* FinishView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishView.swift; sourceTree = "<group>"; };
+		76E1E851296E3EC6001DEFE3 /* PhotosPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotosPickerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +60,7 @@
 				76BA7727296D0695000E8829 /* FirebaseDatabase in Frameworks */,
 				76BA7725296D0695000E8829 /* FirebaseAuth in Frameworks */,
 				76BA7729296D0695000E8829 /* FirebaseFirestore in Frameworks */,
+				76E1E850296E38FF001DEFE3 /* FirebaseStorage in Frameworks */,
 				76BA772B296D0695000E8829 /* FirebaseFirestoreSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,6 +73,7 @@
 			children = (
 				76BA7705296CEAAA000E8829 /* Diary */,
 				76BA7704296CEAAA000E8829 /* Products */,
+				76E1E84E296E38FF001DEFE3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -90,6 +95,7 @@
 				76BA7730296D3E3E000E8829 /* AddAvocado.swift */,
 				76BA7736296DB6BB000E8829 /* OngoingView.swift */,
 				76BA7738296DC595000E8829 /* FinishView.swift */,
+				76E1E851296E3EC6001DEFE3 /* PhotosPickerView.swift */,
 				76BA771E296CF918000E8829 /* Modifier.swift */,
 				76BA772E296D38B4000E8829 /* LoginView */,
 				76BA772F296D38F8000E8829 /* Store */,
@@ -127,6 +133,13 @@
 			path = Store;
 			sourceTree = "<group>";
 		};
+		76E1E84E296E38FF001DEFE3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -148,6 +161,7 @@
 				76BA7726296D0695000E8829 /* FirebaseDatabase */,
 				76BA7728296D0695000E8829 /* FirebaseFirestore */,
 				76BA772A296D0695000E8829 /* FirebaseFirestoreSwift */,
+				76E1E84F296E38FF001DEFE3 /* FirebaseStorage */,
 			);
 			productName = Diary;
 			productReference = 76BA7703296CEAAA000E8829 /* Diary.app */;
@@ -207,6 +221,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				76E1E852296E3EC6001DEFE3 /* PhotosPickerView.swift in Sources */,
 				76BA7719296CF4BE000E8829 /* SignUpView_One.swift in Sources */,
 				76BA772D296D0746000E8829 /* AvocadoStore.swift in Sources */,
 				76BA771D296CF834000E8829 /* SignUpView_Three.swift in Sources */,
@@ -452,6 +467,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 76BA7723296D0695000E8829 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestoreSwift;
+		};
+		76E1E84F296E38FF001DEFE3 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 76BA7723296D0695000E8829 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

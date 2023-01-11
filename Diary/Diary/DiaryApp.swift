@@ -7,6 +7,9 @@
 
 import SwiftUI
 import FirebaseCore
+import FirebaseAuth
+import FirebaseFirestore
+import FirebaseStorage
 
 
 class AppDelegate: NSObject, UIApplicationDelegate {
@@ -26,6 +29,9 @@ struct DiaryApp: App {
         WindowGroup {
             ContentView()
             .environmentObject(avocadoStore)
+//            PhotosPickerTest()
+//                        .environmentObject(avocadoStore)
+
         }
     }
 }

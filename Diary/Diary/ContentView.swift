@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var avocadoStore: AvocadoStore
     @State var isNotLogined: Bool = true
     var body: some View {
             TabView{
@@ -16,10 +17,10 @@ struct ContentView: View {
                         Text("avocado")
                     }.tag(1)
                 
-//                AddAvocado()
-//                    .tabItem {
-//                        Text("리스트")
-//                    }.tag(2)
+              AvocadoList()
+                    .tabItem {
+                        Text("리스트")
+                    }.tag(2)
                 
             }
             .fullScreenCover(isPresented: $isNotLogined) {
