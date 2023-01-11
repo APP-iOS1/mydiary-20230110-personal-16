@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import SwiftUI
 
 var term: String =
 """

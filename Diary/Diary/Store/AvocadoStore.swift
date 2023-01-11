@@ -29,8 +29,9 @@ class AvocadoStore: ObservableObject {
     @Published var currentLocalUser: User?
     @Published var currentStudy: Avocado?
     @Published var avocados: [Avocado] = []
+    @Published var downloadImage: UIImage?
     
-
+    
     
     let database = Firestore.firestore()
     let authentification = Auth.auth()
@@ -52,27 +53,33 @@ class AvocadoStore: ObservableObject {
                     self.errorMessage = "Failed to retrieve downloadURL: \(err)"
                 }
                 self.errorMessage = "Successfully stored image with url: \(url?.absoluteString ?? "")"
-                print(url)
+                //                print(url)
             }
         }
     }
-    func downloadImage(avocado: Avocado) {
+    func downloadImages(avocado: Avocado) {
+//        var result: Image?
         guard let uid = authentification.currentUser?.uid
-        else {return}
+        else { return }
+
+        let ref = storage.reference()
+            .child("\(uid)/\(avocado.id)")
+//            .child("RStZoZnXCxgTP6VUR6hLRXdifZk1/974179E6-8409-4337-8305-A13FF9A9F282")
         
-        let ref = storage.reference().child("\(uid)/\(avocado.id)")
-                
-        // Download in memory with a maximum allowed size of 1MB (1 * 1024 * 1024 bytes)
         ref.getData(maxSize: 1 * 1024 * 1024) { data, error in
+
             if let error = error {
                 self.errorMessage = "Failed to download image from Storage: \(error)"
                 return
             } else {
-                // Data for "images/island.jpg" is returned
-                let image = UIImage(data: data!)
+                self.downloadImage = UIImage(data: data!)
             }
         }
+//
+//        guard let result else {return Image(systemName: "2.circle")}
+//        return result
     }
+    
     
     
     
@@ -242,7 +249,7 @@ class AvocadoStore: ObservableObject {
                         let whatToDo: String = docData["whatToDo"] as? String ?? ""
                         let whatILearned: String = docData["whatILearned"] as? String ?? ""
                         let whatToDid: String = docData["whatToDid"] as? String ?? ""
-
+                        
                         self.avocados.append(Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount, whatToDid: whatToDid, whatILearned: whatILearned)
                         )
                     }
