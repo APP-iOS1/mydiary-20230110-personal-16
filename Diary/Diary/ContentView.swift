@@ -11,22 +11,22 @@ struct ContentView: View {
     @EnvironmentObject var avocadoStore: AvocadoStore
     @State var isNotLogined: Bool = true
     var body: some View {
-            TabView{
-                OngoingView()
-                    .tabItem {
-                        Text("avocado")
-                    }.tag(1)
-                
-              AvocadoList()
-                    .tabItem {
-                        Text("리스트")
-                    }.tag(2)
-                
-            }
-            .fullScreenCover(isPresented: $isNotLogined) {
-                LoginView(isNotLogined: $isNotLogined)
-            }
-        
+        TabView{
+            OngoingView()
+                .tabItem {
+                    Image(systemName: "message.badge")
+                    Text("Ongoing")
+                }.tag(1)
+            
+            AvocadoList()
+                .tabItem {
+                    Image(systemName: "list.bullet")
+                    Text("List")
+                }.tag(2)
+        }
+        .fullScreenCover(isPresented: $isNotLogined) {
+            LoginView(isNotLogined: $isNotLogined)
+        }
     }
 }
 

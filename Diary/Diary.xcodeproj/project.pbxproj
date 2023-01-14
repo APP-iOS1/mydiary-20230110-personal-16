@@ -7,7 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		76179E1A2972A12500032B12 /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76179E192972A12500032B12 /* ProgressView.swift */; };
+		764F158A296FD1CC00317637 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764F1589296FD1CC00317637 /* LocationService.swift */; };
 		7662D701296F16720082D884 /* TestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7662D700296F16720082D884 /* TestView.swift */; };
+		7682384D2971411E00B231B9 /* ListDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7682384C2971411E00B231B9 /* ListDetailView.swift */; };
+		7682384F2971A7FC00B231B9 /* CircleProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7682384E2971A7FC00B231B9 /* CircleProgressBar.swift */; };
 		76BA7707296CEAAA000E8829 /* DiaryApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7706296CEAAA000E8829 /* DiaryApp.swift */; };
 		76BA7709296CEAAA000E8829 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7708296CEAAA000E8829 /* ContentView.swift */; };
 		76BA770B296CEAAB000E8829 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 76BA770A296CEAAB000E8829 /* Assets.xcassets */; };
@@ -33,7 +37,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		76179E192972A12500032B12 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		764F1589296FD1CC00317637 /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		764F158B296FD31500317637 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7662D700296F16720082D884 /* TestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestView.swift; sourceTree = "<group>"; };
+		7682384C2971411E00B231B9 /* ListDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListDetailView.swift; sourceTree = "<group>"; };
+		7682384E2971A7FC00B231B9 /* CircleProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleProgressBar.swift; sourceTree = "<group>"; };
 		76BA7703296CEAAA000E8829 /* Diary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Diary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76BA7706296CEAAA000E8829 /* DiaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryApp.swift; sourceTree = "<group>"; };
 		76BA7708296CEAAA000E8829 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -70,6 +79,36 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		76179E1B2972A1AB00032B12 /* Ongoing */ = {
+			isa = PBXGroup;
+			children = (
+				76BA7736296DB6BB000E8829 /* OngoingView.swift */,
+				76179E192972A12500032B12 /* ProgressView.swift */,
+				76BA7730296D3E3E000E8829 /* AddAvocado.swift */,
+				76BA7738296DC595000E8829 /* FinishView.swift */,
+			);
+			path = Ongoing;
+			sourceTree = "<group>";
+		};
+		76179E1C2972A1D700032B12 /* List */ = {
+			isa = PBXGroup;
+			children = (
+				76BA7734296DAEC8000E8829 /* AvocadoList.swift */,
+				7682384C2971411E00B231B9 /* ListDetailView.swift */,
+			);
+			path = List;
+			sourceTree = "<group>";
+		};
+		76179E1D2972AE7800032B12 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				76BA771E296CF918000E8829 /* Privacy.swift */,
+				76E1E851296E3EC6001DEFE3 /* PhotosPickerView.swift */,
+				7682384E2971A7FC00B231B9 /* CircleProgressBar.swift */,
+			);
+			path = Other;
+			sourceTree = "<group>";
+		};
 		7662D6FE296F060D0082D884 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -81,13 +120,10 @@
 		7662D6FF296F06AA0082D884 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				76BA7730296D3E3E000E8829 /* AddAvocado.swift */,
-				76BA7734296DAEC8000E8829 /* AvocadoList.swift */,
+				76179E1B2972A1AB00032B12 /* Ongoing */,
+				76179E1C2972A1D700032B12 /* List */,
+				76179E1D2972AE7800032B12 /* Other */,
 				7662D700296F16720082D884 /* TestView.swift */,
-				76BA7736296DB6BB000E8829 /* OngoingView.swift */,
-				76BA7738296DC595000E8829 /* FinishView.swift */,
-				76E1E851296E3EC6001DEFE3 /* PhotosPickerView.swift */,
-				76BA771E296CF918000E8829 /* Privacy.swift */,
 				76BA772E296D38B4000E8829 /* Login */,
 			);
 			path = Views;
@@ -113,6 +149,7 @@
 		76BA7705296CEAAA000E8829 /* Diary */ = {
 			isa = PBXGroup;
 			children = (
+				764F158B296FD31500317637 /* Info.plist */,
 				76BA7706296CEAAA000E8829 /* DiaryApp.swift */,
 				76BA7708296CEAAA000E8829 /* ContentView.swift */,
 				7662D6FF296F06AA0082D884 /* Views */,
@@ -147,6 +184,7 @@
 		76BA772F296D38F8000E8829 /* Store */ = {
 			isa = PBXGroup;
 			children = (
+				764F1589296FD1CC00317637 /* LocationService.swift */,
 				76BA772C296D0746000E8829 /* AvocadoStore.swift */,
 			);
 			path = Store;
@@ -245,14 +283,18 @@
 				76BA772D296D0746000E8829 /* AvocadoStore.swift in Sources */,
 				76BA771D296CF834000E8829 /* SignUpView_Three.swift in Sources */,
 				76BA7715296CED8E000E8829 /* LoginView.swift in Sources */,
+				7682384D2971411E00B231B9 /* ListDetailView.swift in Sources */,
+				7682384F2971A7FC00B231B9 /* CircleProgressBar.swift in Sources */,
 				76BA7737296DB6BB000E8829 /* OngoingView.swift in Sources */,
 				7662D701296F16720082D884 /* TestView.swift in Sources */,
 				76BA7709296CEAAA000E8829 /* ContentView.swift in Sources */,
 				76BA7733296DAE52000E8829 /* Model.swift in Sources */,
 				76BA7731296D3E3E000E8829 /* AddAvocado.swift in Sources */,
+				764F158A296FD1CC00317637 /* LocationService.swift in Sources */,
 				76BA7735296DAEC8000E8829 /* AvocadoList.swift in Sources */,
 				76BA7707296CEAAA000E8829 /* DiaryApp.swift in Sources */,
 				76BA771B296CF712000E8829 /* SignUpView_Two.swift in Sources */,
+				76179E1A2972A12500032B12 /* ProgressView.swift in Sources */,
 				76BA7739296DC595000E8829 /* FinishView.swift in Sources */,
 				76BA771F296CF918000E8829 /* Privacy.swift in Sources */,
 			);
@@ -386,6 +428,8 @@
 				DEVELOPMENT_TEAM = 54ZG4WU22U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Diary/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -415,6 +459,8 @@
 				DEVELOPMENT_TEAM = 54ZG4WU22U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Diary/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

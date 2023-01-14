@@ -11,6 +11,7 @@ import FirebaseAuth
 import FirebaseFirestore
 import FirebaseStorage
 import SwiftUI
+import CoreLocation
 
 enum LoginRequestState {
     case loggedIn
@@ -31,40 +32,42 @@ class AvocadoStore: ObservableObject {
     @Published var avocados: [Avocado] = []
     @Published var downloadImage: UIImage?
     
-    
+//    init() {
+//        self.currentStudy = Avocado(id: "1", goalCount: 4, studyTimePerAvocado: 25, breakTimePerAvocado: 5, whatToDo: "아보카드 샌드위치 만들기", doneCount: 6, whatToDid: "샌드위치, 후라이, 성공적", whatILearned: "소금, 후추로도 괜찮네")
+//
+//        self.loginRequestState = .loggedIn
+//    }
     
     let database = Firestore.firestore()
     let authentification = Auth.auth()
     let storage = Storage.storage()
     
     
-    func uploadImage(image: UIImage?) {
+    func uploadImage(image: UIImage?, currentAvocado: Avocado) {
         guard let uid = authentification.currentUser?.uid
         else {return}
-        let ref = storage.reference().child("\(uid)/\(currentStudy?.id ?? "")")
+        let ref = storage.reference().child("\(uid)/\(currentAvocado.id)")
         guard let imageData = image?.jpegData(compressionQuality: 0.5) else {return}
         ref.putData(imageData, metadata: nil) { metadata, err in
             if let err = err {
                 self.errorMessage = "Failed to push image to Storage: \(err)"
                 return
             }
+            print("이미지 메소드 발동")
             ref.downloadURL { url, err in
                 if let err = err {
                     self.errorMessage = "Failed to retrieve downloadURL: \(err)"
                 }
                 self.errorMessage = "Successfully stored image with url: \(url?.absoluteString ?? "")"
-                //                print(url)
+                                print(url)
             }
         }
     }
     func downloadImages(avocado: Avocado) {
-//        var result: Image?
-        guard let uid = authentification.currentUser?.uid
-        else { return }
+
 
         let ref = storage.reference()
-            .child("\(uid)/\(avocado.id)")
-//            .child("RStZoZnXCxgTP6VUR6hLRXdifZk1/974179E6-8409-4337-8305-A13FF9A9F282")
+            .child("\(authentification.currentUser?.uid ?? "")/\(avocado.id)")
         
         ref.getData(maxSize: 1 * 1024 * 1024) { data, error in
 
@@ -230,35 +233,6 @@ class AvocadoStore: ObservableObject {
                 }
             }
     }
-    
-    
-    func fetchAvocadoAtList() {
-        database.collection("user").document(currentLocalUser?.id ?? "").collection("avocados")
-            .getDocuments { snapshot, error in
-                self.avocados.removeAll()
-                if let snapshot {
-                    
-                    for document in snapshot.documents {
-                        let id : String = document.documentID
-                        let docData = document.data()
-                        
-                        let goalCount: Int = docData["goalCount"] as? Int ?? 0
-                        let doneCount: Int? = docData["doneCount"] as? Int ?? 0
-                        let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
-                        let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
-                        let whatToDo: String = docData["whatToDo"] as? String ?? ""
-                        let whatILearned: String = docData["whatILearned"] as? String ?? ""
-                        let whatToDid: String = docData["whatToDid"] as? String ?? ""
-                        
-                        self.avocados.append(Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount, whatToDid: whatToDid, whatILearned: whatILearned)
-                        )
-                    }
-                    
-                    
-                }
-            }
-    }
-    
     func updateDoneCount(doneCount: Int) {
         database.collection("user")
             .document(currentLocalUser!.id)
@@ -275,26 +249,57 @@ class AvocadoStore: ObservableObject {
                 }
             }
     }
+
     
-    func updateFinishInfo(whatILearned: String, whatToDid: String) {
-        database.collection("user")
-            .document(currentLocalUser!.id)
-            .collection("currentAvocado")
-            .document(currentStudy!.id)
-            .updateData([
-                "whatILearned": whatILearned,
-                "whatToDid": whatToDid
-            ]) { err in
-                if let err = err {
-                    print("update finishInfo erorr: \(err)")
-                } else {
-                    print("update finishInfo 완료")
-                    self.currentStudy?.whatToDid = whatToDid
-                    self.currentStudy?.whatILearned = whatILearned
+    func fetchAvocadoAtList() {
+        database.collection("user").document(authentification.currentUser?.uid ?? "").collection("avocados")
+            .getDocuments { snapshot, error in
+                self.avocados.removeAll()
+                if let snapshot {
+                    
+                    for document in snapshot.documents {
+                        let id : String = document.documentID
+                        let docData = document.data()
+                        
+                        let goalCount: Int = docData["goalCount"] as? Int ?? 0
+                        let doneCount: Int? = docData["doneCount"] as? Int ?? 0
+                        let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
+                        let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
+                        let whatToDo: String = docData["whatToDo"] as? String ?? ""
+                        let whatILearned: String = docData["whatILearned"] as? String ?? ""
+                        let whatToDid: String = docData["whatToDid"] as? String ?? ""
+                        let currentGeoPoint: GeoPoint = docData["currentLocation"] as? GeoPoint ?? GeoPoint(latitude: 0, longitude: 0)
+                        let currentLocation: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: currentGeoPoint.latitude, longitude: currentGeoPoint.longitude)
+                        self.avocados.append(Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount, whatToDid: whatToDid, whatILearned: whatILearned, currentLocation: currentLocation)
+                        )
+                    }
+                    
+
                 }
             }
     }
-    func createAvocadoAtList(avocado: Avocado, whatILearned: String, whatToDid: String) {
+    
+    
+//    func updateFinishInfo(whatILearned: String, whatToDid: String) {
+//        database.collection("user")
+//            .document(currentLocalUser!.id)
+//            .collection("currentAvocado")
+//            .document(currentStudy!.id)
+//            .updateData([
+//                "whatILearned": whatILearned,
+//                "whatToDid": whatToDid
+//            ]) { err in
+//                if let err = err {
+//                    print("update finishInfo erorr: \(err)")
+//                } else {
+//                    print("update finishInfo 완료")
+//                    self.currentStudy?.whatToDid = whatToDid
+//                    self.currentStudy?.whatILearned = whatILearned
+//                }
+//            }
+//    }
+    func createAvocadoAtList(avocado: Avocado, whatILearned: String, whatToDid: String, currentLocation: CLLocationCoordinate2D) {
+        let currentGeoPoint: GeoPoint = GeoPoint(latitude: currentLocation.latitude, longitude: currentLocation.longitude)
         database.collection("user")
             .document(currentLocalUser!.id)
             .collection("avocados")
@@ -307,7 +312,8 @@ class AvocadoStore: ObservableObject {
                 "whatToDo": avocado.whatToDo,
                 "whatILearned": whatILearned,
                 "whatToDid": whatToDid,
-                "doneCount": avocado.doneCount ?? 0
+                "doneCount": avocado.doneCount ?? 0,
+                "currentLocation": currentGeoPoint
             ]) { err in
                 if let err = err {
                     print("create avocado plan erorr: \(err)")
@@ -315,12 +321,12 @@ class AvocadoStore: ObservableObject {
                     print("create avocado plan 완료")
                 }
             }
-        database.collection("user").document(currentLocalUser!.id)
+        database.collection("user").document(authentification.currentUser?.uid ?? "")
             .collection("currentAvocado").document(currentStudy!.id).delete()
         self.currentStudy = nil
     }
     func fetchAvocado() {
-        database.collection("user").document(currentLocalUser!.id).collection("currentAvocado")
+        database.collection("user").document(authentification.currentUser?.uid ?? "").collection("currentAvocado")
             .getDocuments { snapshot, error in
                 if let snapshot {
                     
@@ -329,16 +335,13 @@ class AvocadoStore: ObservableObject {
                         let docData = document.data()
                         
                         let goalCount: Int = docData["goalCount"] as? Int ?? 0
-                        let doneCount: Int? = docData["doneCount"] as? Int ?? 0
+                        let doneCount: Int = docData["doneCount"] as? Int ?? 0
                         let studyTimePerAvocado: Int = docData["studyTimePerAvocado"] as? Int ?? 0
                         let breakTimePerAvocado: Int = docData["breakTimePerAvocado"] as? Int ?? 0
                         let whatToDo: String = docData["whatToDo"] as? String ?? ""
                         
                         self.currentStudy = Avocado(id: id, goalCount: goalCount, studyTimePerAvocado: studyTimePerAvocado, breakTimePerAvocado: breakTimePerAvocado, whatToDo: whatToDo, doneCount: doneCount)
-                        print(self.currentLocalUser!)
                     }
-                    
-                    
                 }
             }
     }

@@ -1,36 +1,34 @@
-//
-//  TestView.swift
-//  Diary
-//
-//  Created by TAEHYOUNG KIM on 2023/01/12.
-//
-
 import SwiftUI
 
 struct TestView: View {
-    @EnvironmentObject var avocadoStore: AvocadoStore
-    var avocado = Avocado(id: "974179E6-8409-4337-8305-A13FF9A9F282", goalCount: 5, studyTimePerAvocado: 5, breakTimePerAvocado: 5, whatToDo: "")
-    
+    @State private var enableLogging = false
+    @State private var selectedColor = "Red"
+    @State private var colors = ["Red", "Green", "Blue"]
+
     var body: some View {
-        VStack {
-            
-            
-            Button {
+        Form {
+            Section(footer: Text("Note: Enabling logging may slow down the app")) {
+                Picker("Select a color", selection: $selectedColor) {
+                    ForEach(colors, id: \.self) {
+                        Text($0)
+                    }
+                }
+                .pickerStyle(.segmented)
 
-
-            } label: {
-                Text("패치 스토리지")
+                Toggle("Enable Logging", isOn: $enableLogging)
             }
 
+            Section {
+                Button("Save changes") {
+                    // activate theme!
+                }
+            }
         }
-       
     }
 }
 
-struct TestView_Previews: PreviewProvider {
+struct TestView_Preview: PreviewProvider {
     static var previews: some View {
         TestView()
-            .environmentObject(AvocadoStore())
-
     }
 }

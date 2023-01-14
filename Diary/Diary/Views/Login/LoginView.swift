@@ -17,7 +17,7 @@ struct LoginView: View {
         Task {
             await avocadoStore.login(withEmail: textFieldLoginID, withPassword: textFieldLoginPW)
             if avocadoStore.loginRequestState == .loggedIn {
-                isNotLogined.toggle()
+                isNotLogined = false
             }
         }
     }

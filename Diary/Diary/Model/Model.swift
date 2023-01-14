@@ -6,8 +6,11 @@
 //
 
 import Foundation
+import MapKit
+import SwiftUI
 
-struct Avocado: Hashable, Identifiable {
+struct Avocado: Identifiable {
+    
     var id: String
     var goalCount: Int
     var studyTimePerAvocado: Int
@@ -16,6 +19,7 @@ struct Avocado: Hashable, Identifiable {
     var doneCount: Int?
     var whatToDid: String?
     var whatILearned: String?
+    var currentLocation: CLLocationCoordinate2D?
     
     var totalStudyTime: Int? {
         (studyTimePerAvocado + breakTimePerAvocado) * doneCount!
