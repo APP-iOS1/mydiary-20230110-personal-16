@@ -8,47 +8,88 @@
 import SwiftUI
 
 struct OngoingView: View {
-    @EnvironmentObject var avocadoStore: AvocadoStore
+    
+    @StateObject var studyStore: StudyStore
     @State var isFinished: Bool = false
-    @State var addViewShowing: Bool = false
+    @State var isShowAddingView: Bool = false
+    @State var isEditing: Bool = false
     var body: some View {
         NavigationStack {
-            if avocadoStore.loginRequestState == .loggedIn {
-                VStack {
-                    if avocadoStore.currentStudy != nil {
-                        List {
+            VStack {
+                if studyStore.savedStudies.isEmpty {
+                    //MARK: - 진행중인 공부가 없을 경우
+                    ZStack {
+                        Color("background")
+                      
+                        Button {
+                            isShowAddingView.toggle()
+                        } label: {
+                            VStack {
+                                Image("avocado_1")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: UIScreen.main.bounds.width * 0.3)
+                                
+                                Label("Make a plan", systemImage: "plus.circle")
+                                    .foregroundColor(.gray)
+                            }
+                        }
+                    }
+                    .edgesIgnoringSafeArea(.all)
+                } else {
+                    //MARK: - 진행중인 공부가 있을 경우
+                    List {
+                        ForEach(studyStore.savedStudies) { study in
                             
                             //MARK: Progress
                             Section {
-                                ProgressView(avocadoStore: avocadoStore)
+                                ProgressView(studyStore: studyStore, study: study)
                             } header: {
-                                Text("Progress")
-                                    .padding(.leading, -20)
+                                HStack {
+                                    Text("Progress")
+                                    Spacer()
+                                    Menu {
+                                        Button {
+                                            isEditing.toggle()
+                                        } label: {
+                                            Label("Edit", systemImage: "pencil")
+                                        }
+
+                                        Button(role: .destructive) {
+                                            studyStore.deleteAllStudy()
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+
+                                    } label: {
+                                        Image(systemName: "ellipsis")
+                                            .foregroundColor(Color(UIColor.label))
+                                    }
+                                }
+                                .padding(.horizontal, -20)
                             }
-                            .headerProminence(.increased)
                             
                             //MARK: Fixed Time
                             Section {
-                                Text("\(avocadoStore.currentStudy?.studyTimePerAvocado ?? 0)min study, \(avocadoStore.currentStudy?.breakTimePerAvocado ?? 0)min break ")
+                                Text("\(study.studyTimePerSession)min study, \(study.breakTimePerSession)min break ")
                             } header: {
                                 Text("📌 Fixed time")
                                     .padding(.leading, -20)
                             }
-                            .headerProminence(.increased)
                             
                             //MARK: To do
                             Section {
-                                Text("\(avocadoStore.currentStudy?.whatToDo ?? "")")
+                                Text(study.whatToDo ?? "")
                             } header: {
                                 Text("✏️ To do")
                                     .padding(.leading, -20)
                             }
-                            .headerProminence(.increased)
                             
                             //MARK: Done Button
                             HStack {
                                 Spacer()
                                 Button {
+                                    studyStore.selectedStudy = study
                                     isFinished.toggle()
                                 } label: {
                                     Text("Done")
@@ -56,55 +97,28 @@ struct OngoingView: View {
                                 .tint(Color.white)
                                 Spacer()
                             }
-                            .listRowBackground(Color(red: 0.775, green: 0.537, blue: 0.259))
-                        }
-                        .background(Color("background"))
-                        .scrollContentBackground(.hidden)
-                        
-                    } else {
-                        ZStack {
-                            Color("background")
-                            VStack {
-                                Image("avocado")
-                                    .resizable()
-                                    .scaledToFit()
-                                Text("계획을 추가해주세요")
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                        .edgesIgnoringSafeArea(.all)
-                    }
-                }
-                
-                .onAppear {
-                    avocadoStore.fetchAvocado()
-                    print("ongoingView fetch appear")
-                }
-                .navigationTitle("Ongoing...")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    if avocadoStore.currentStudy == nil {
-                        Button {
-                            addViewShowing.toggle()
-                        } label: {
-                            Text("Add")
+                            .listRowBackground(Color.accentColor)
                         }
                     }
+                    .headerProminence(.increased)
+                    .background(Color("background"))
+                    .scrollContentBackground(.hidden)
                 }
-                .sheet(isPresented: $addViewShowing) {
-                    AddAvocado(addViewShowing: $addViewShowing)
-                }
-                .fullScreenCover(isPresented: $isFinished) {
-                    FinishView(currentStudy: avocadoStore.currentStudy!, isFinished: $isFinished)
-                }
-                
-            } else {
-                ZStack {
-                    Color("background")
-                        Text("로그인 해주세요")
-                            .foregroundColor(.secondary)
-                }
-                .edgesIgnoringSafeArea(.all)
+            }
+            .navigationTitle("Study in progess")
+            .navigationBarTitleDisplayMode(.inline)
+//                        .toolbar {
+//                            ToolbarItem(placement: .navigationBarTrailing) {
+//                                Button("hello") {
+//                                    isShowAddingView = true
+//                                }
+//                            }
+//                        }
+            .sheet(isPresented: $isShowAddingView, content: {
+                AddingView(studyStore: studyStore, isShowAddingView: $isShowAddingView)
+            })
+            .fullScreenCover(isPresented: $isFinished) {
+                FinishView(studyStore: studyStore, study: studyStore.selectedStudy, isFinished: $isFinished)
             }
         }
     }
@@ -114,9 +128,7 @@ struct OngoingView: View {
 
 struct OngoingView_Previews: PreviewProvider {
     static var previews: some View {
-        OngoingView()
-            .environmentObject(AvocadoStore())
-        
+        OngoingView(studyStore: StudyStore())
     }
 }
 

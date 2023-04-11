@@ -8,36 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var avocadoStore: AvocadoStore
-    @State var isNotLogined: Bool = true
+    @StateObject var studyStore: StudyStore = StudyStore()
     var body: some View {
         TabView{
-            OngoingView()
+            OngoingView(studyStore: studyStore)
                 .tabItem {
                     Image(systemName: "message.badge")
                     Text("Ongoing")
-                }.tag(1)
+                }
             
-            AvocadoList()
+            FinishedListView(studyStore: studyStore)
                 .tabItem {
                     Image(systemName: "list.bullet")
                     Text("List")
-                }.tag(2)
-        }
-        .fullScreenCover(isPresented: $isNotLogined) {
-            LoginView(isNotLogined: $isNotLogined)
+                }
         }
     }
 }
-
-
-
-
-    
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
-            .environmentObject(AvocadoStore())
     }
 }
+ 

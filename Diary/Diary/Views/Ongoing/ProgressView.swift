@@ -8,51 +8,59 @@
 import SwiftUI
 
 struct ProgressView: View {
-    @StateObject var avocadoStore: AvocadoStore
     
+    @StateObject var studyStore: StudyStore
+    var study: Study
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
-                Text("Avocado")
-                Text("\(avocadoStore.currentStudy?.doneCount ?? 0) / \(avocadoStore.currentStudy?.goalCount ?? 0) EA")
-                    .font(.headline)
-                    .bold()
                 Spacer()
+
+                Text("Avocado")
+                Text("\(study.doneCount) / \(study.goalCount) EA")
+                    .font(.headline)
+                
+                Spacer()
+                
                 HStack {
                     Button {
-                        avocadoStore.currentStudy?.doneCount! -= 1
+                        if study.doneCount > 0 {
+                            studyStore.doneCount(study: study, "-")
+                        }
                     } label: {
                         Image(systemName: "minus.circle")
                     }
                     
                     Text("🥑")
-                        .font(.title)
                     Button {
-                        avocadoStore.currentStudy?.doneCount! += 1
+                        studyStore.doneCount(study: study, "+")
                     } label: {
                         Image(systemName: "plus.circle")
-                        
-                    }
-                    .onChange(of: avocadoStore.currentStudy?.doneCount ?? 0) { count in
-                        avocadoStore.updateDoneCount(doneCount: count)
                     }
                     
                 }
-                .font(.title3)
+                .font(.title)
                 .buttonStyle(BorderlessButtonStyle())
-                .foregroundColor(Color(hue: 0.259, saturation: 0.869, brightness: 0.373))
-                
-            }
+                .foregroundColor(Color(UIColor.label))
+            
+            }.frame(maxWidth: .infinity, maxHeight: .infinity)
+            
             Spacer()
-            CircleProgressBar(avocadoStore: avocadoStore)
-        }
-        .padding(EdgeInsets(top: 15, leading: 0, bottom: 15, trailing: 10))
+            
+            CircleProgressBar(studyStore: studyStore, study: study, scale: 0.9)
+            
+        }.frame(height: UIScreen.main.bounds.height * 0.25)
+        
     }
 }
 
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
-        ProgressView(avocadoStore: AvocadoStore())
+        let study = Study(context: StudyStore().container.viewContext)
+        study.whatToDo = ""
+        study.doneCount = 4
+        study.goalCount = 8
+        return ProgressView(studyStore: StudyStore(), study: study)
     }
 }
 
