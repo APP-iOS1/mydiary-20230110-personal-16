@@ -18,7 +18,6 @@
 		76BA771B296CF712000E8829 /* SignUpView_Two.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA771A296CF712000E8829 /* SignUpView_Two.swift */; };
 		76BA771D296CF834000E8829 /* SignUpView_Three.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA771C296CF834000E8829 /* SignUpView_Three.swift */; };
 		76BA771F296CF918000E8829 /* Privacy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA771E296CF918000E8829 /* Privacy.swift */; };
-		76BA7722296D05B7000E8829 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 76BA7721296D05B7000E8829 /* GoogleService-Info.plist */; };
 		76BA772D296D0746000E8829 /* StudyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA772C296D0746000E8829 /* StudyStore.swift */; };
 		76BA7731296D3E3E000E8829 /* AddingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7730296D3E3E000E8829 /* AddingView.swift */; };
 		76BA7735296DAEC8000E8829 /* FinishedListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76BA7734296DAEC8000E8829 /* FinishedListView.swift */; };
@@ -43,7 +42,6 @@
 /* Begin PBXFileReference section */
 		76179E192972A12500032B12 /* ProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
 		764D215929E3F1E900C9175C /* FinishedStudyDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishedStudyDetail.swift; sourceTree = "<group>"; };
-		764F158B296FD31500317637 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7682384E2971A7FC00B231B9 /* CircleProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleProgressBar.swift; sourceTree = "<group>"; };
 		76BA7703296CEAAA000E8829 /* Diary.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Diary.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76BA7706296CEAAA000E8829 /* DiaryApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiaryApp.swift; sourceTree = "<group>"; };
@@ -54,7 +52,6 @@
 		76BA771A296CF712000E8829 /* SignUpView_Two.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView_Two.swift; sourceTree = "<group>"; };
 		76BA771C296CF834000E8829 /* SignUpView_Three.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpView_Three.swift; sourceTree = "<group>"; };
 		76BA771E296CF918000E8829 /* Privacy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Privacy.swift; sourceTree = "<group>"; };
-		76BA7721296D05B7000E8829 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		76BA772C296D0746000E8829 /* StudyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyStore.swift; sourceTree = "<group>"; };
 		76BA7730296D3E3E000E8829 /* AddingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddingView.swift; sourceTree = "<group>"; };
 		76BA7734296DAEC8000E8829 /* FinishedListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishedListView.swift; sourceTree = "<group>"; };
@@ -141,8 +138,6 @@
 		76BA7705296CEAAA000E8829 /* Diary */ = {
 			isa = PBXGroup;
 			children = (
-				764F158B296FD31500317637 /* Info.plist */,
-				76BA7721296D05B7000E8829 /* GoogleService-Info.plist */,
 				76BA7706296CEAAA000E8829 /* DiaryApp.swift */,
 				76BA7708296CEAAA000E8829 /* ContentView.swift */,
 				7662D6FF296F06AA0082D884 /* Views */,
@@ -243,7 +238,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				76BA7722296D05B7000E8829 /* GoogleService-Info.plist in Resources */,
 				76BA770B296CEAAB000E8829 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
