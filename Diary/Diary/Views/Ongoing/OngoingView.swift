@@ -116,7 +116,7 @@ struct OngoingView: View {
                     }
                     .headerProminence(.increased)
                     .background(Color("background"))
-                    .scrollContentBackground(.hidden) 
+                    .scrollContentBackground(.hidden)
                 }
             }
             .navigationTitle("Study in progess")
@@ -125,7 +125,7 @@ struct OngoingView: View {
                 FinishView(studyStore: studyStore, study: studyStore.selectedStudy, isFinished: $isFinished)
             }
         }
-    }
+    } 
 }
 
 
