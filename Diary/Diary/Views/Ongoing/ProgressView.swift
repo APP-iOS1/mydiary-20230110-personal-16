@@ -17,7 +17,7 @@ struct ProgressView: View {
                 Spacer()
 
                 Text("Avocado")
-                Text("\(study.doneCount) / \(study.goalCount) EA")
+                Text("\(study.doneCount) / \(study.goalCount) pcs")
                     .font(.headline)
                 
                 Spacer()
@@ -56,11 +56,12 @@ struct ProgressView: View {
 
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
-        let study = Study(context: StudyStore().container.viewContext)
+        let studyStore = StudyStore()
+        let study = Study(context: studyStore.container.viewContext)
         study.whatToDo = ""
         study.doneCount = 4
         study.goalCount = 8
-        return ProgressView(studyStore: StudyStore(), study: study)
+        return ProgressView(studyStore: studyStore, study: study)
     }
 }
 

@@ -36,7 +36,7 @@ struct CircleProgressBar: View {
                 .padding()
             
             Text("\(progress * 100, specifier: "%.0f")%")
-                .font(.title)
+                .font(.largeTitle)
                 .bold()
                 .scaleEffect(scale)
         }
@@ -50,7 +50,7 @@ struct CircleProgressBar_Previews: PreviewProvider {
         let study = Study(context: StudyStore().container.viewContext)
         study.whatToDo = ""
         study.goalCount = 5
-        study.doneCount = 4
+        study.doneCount = 0
         return CircleProgressBar(studyStore: StudyStore(), study: study)
     }
 }

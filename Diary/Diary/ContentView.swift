@@ -9,20 +9,28 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var studyStore: StudyStore = StudyStore()
+    @State var page = 0
+    @State var isShowAddingView: Bool = false
     var body: some View {
-        TabView{
-            OngoingView(studyStore: studyStore)
-                .tabItem {
-                    Image(systemName: "message.badge")
-                    Text("Ongoing")
-                }
+        
+        TabView(selection: $page){
             
-            FinishedListView(studyStore: studyStore)
+            OngoingView(studyStore: studyStore, isShowAddingView: $isShowAddingView)
+                .tabItem {
+                    Image(systemName: "message")
+                    Text("Ongoing")
+                }.tag(0)
+                .sheet(isPresented: $isShowAddingView, content: {
+                    AddingView(studyStore: studyStore, page: $page, isShowAddingView: $isShowAddingView)
+                })
+
+            FinishedListView(studyStore: studyStore, page: $page, isShowAddingView: $isShowAddingView)
                 .tabItem {
                     Image(systemName: "list.bullet")
                     Text("List")
-                }
+                }.tag(1)
         }
+        
     }
 }
 

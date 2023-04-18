@@ -14,66 +14,93 @@ struct FinishedStudyDetail: View {
         List {
             Section {
                 VStack(alignment: .leading) {
-                    Text(study.whatToDid ?? "")
                     Text("오후 10:40 - 오전 1:10")
                         .font(.footnote)
                         .foregroundColor(.gray)
+                    
+                    Text(study.whatToDid ?? "")
+                        .padding(.vertical, 8)
                 }
             } header: {
                 Text("What to did?")
                     .padding(.leading, -20)
-
             }
             
             Section {
-                HStack {
-                    CircleProgressBar(studyStore: studyStore, study: study, scale: 0.8)
-                    VStack(alignment: .leading) {
-                        Text("목표: \(study.doneCount) / \(study.goalCount)")
-                        Text("\(study.studyTimePerSession)분 / \(study.breakTimePerSession)분")
-                        Text("총 150분 / 2시간 30분")
+                VStack(spacing: 12) {
+                    HStack {
+                        CircleProgressBar(studyStore: studyStore, study: study, scale: 1.1)
+                    }
+                    
+                    Divider()
+                        .padding(.vertical, 12)
+                    
+                    HStack {
+                        Text("Avocado 🥑")
+                            .bold()
+                        Spacer()
+                        Text("\(study.doneCount) / \(study.goalCount)pcs.")
+                        
+                    }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    
+                    HStack {
+                        Text("Concentration")
+                            .bold()
+                        Spacer()
+                        Text("\((study.studyTimePerSession + study.breakTimePerSession) * study.doneCount)min.")
                     }
                 }
+                .padding(.vertical, 12)
             } header: {
                 Text("Acheivement")
                     .padding(.leading, -20)
-
             }
-                
+            
+            
+            //MARK: Set Time
+            Section {
+                Text("\(study.studyTimePerSession)min study, \(study.breakTimePerSession)min break ")
+            } header: {
+                Text("📌 Set time")
+                    .padding(.leading, -20)
+            }
+            
             Section {
                 Text(study.whatILearned ?? "")
-
+                
             } header: {
                 Text("What to learned?")
                     .padding(.leading, -20)
-
             }
-
-                                
-                
+            
+            
+            
         }
         .headerProminence(.increased)
-        .navigationTitle("4월 10일 (월)")
+        .navigationTitle(dateFormatter(createdDate: study.createdDate ?? Date(), dateFormat: "d, MMM (E)"))
         .background(Color("background"))
         .scrollContentBackground(.hidden)
-
+        
     }
 }
 
 struct FinishedStudyDetail_Previews: PreviewProvider {
     static var previews: some View {
-        let study = Study(context: StudyStore().container.viewContext)
+        let studyStore = StudyStore()
+        let study = Study(context: studyStore.container.viewContext)
         study.whatToDo = "코어데이터 코어데이터 프리뷰 크러쉬 해결"
         study.id = UUID().uuidString
         study.isFinished = true
         study.studyTimePerSession = 25
         study.breakTimePerSession = 5
         study.goalCount = 5
-        study.doneCount = 4
+        study.doneCount = 0
         study.whatToDid = "코어데이터 코어데이터 프리뷰 크러쉬 해결"
         study.whatILearned = "코어데이터 코어데이터 프리뷰 크러쉬 해결"
         study.createdDate = Date()
-        return FinishedStudyDetail(studyStore: StudyStore(), study: study)
+        return FinishedStudyDetail(studyStore: studyStore, study: study)
     }
 }
 

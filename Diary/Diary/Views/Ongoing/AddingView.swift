@@ -14,9 +14,9 @@ struct AddingView: View {
     @State var breakTimePerSession: Int16 = 5
     @State var goalCount: Int16 = 2
     @State var whatToDo: String = ""
-    
+    @Binding var page: Int
     @Binding var isShowAddingView: Bool
-    
+    @State var haveWhiteSpace: Bool = false
     var studyTimes: [Int16] = [5,10,15,20,25,30,35,40,45,50,55,60]
     var breakTimes: [Int16] = [5,10,15,20,25,30]
     
@@ -77,7 +77,7 @@ struct AddingView: View {
                         HStack {
                             Picker(selection: $goalCount) {
                                 ForEach(Int16(1)..<Int16(50), id: \.self) { count in
-                                    Text("\(count)ea")
+                                    Text("\(count)pcs")
                                         .tag(count)
                                 }
                             } label: {
@@ -109,7 +109,7 @@ struct AddingView: View {
                             .frame(maxWidth: .infinity)
                         
                         TextEditor(text: $whatToDo)
-                            .frame(height: UIScreen.main.bounds.height * 0.3)
+                            .frame(height: UIScreen.main.bounds.height * 0.2)
                     }
                 } header: {
                     Text("Set tasks")
@@ -120,22 +120,12 @@ struct AddingView: View {
                     RoundedRectangle(cornerRadius: 12)
                         .foregroundColor(Color(UIColor.secondarySystemGroupedBackground))
                 )
-
-                
-                Button {
-                    studyStore.addStudy(studyTime: studyTimePerSession, breakTime: breakTimePerSession, goalCount: goalCount, whatToDo: whatToDo)
-                    isShowAddingView = false
-                } label: {
-                    Text("Add")
-                }
-                .frame(maxWidth: .infinity)
-                .tint(Color.white)
-                .listRowBackground(Color(red: 0.775, green: 0.537, blue: 0.259))
-                
             }
             
             .navigationTitle("New plan")
             .navigationBarTitleDisplayMode(.inline)
+            .background(Color("background"))
+            .scrollContentBackground(.hidden)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(role: .cancel) {
@@ -146,22 +136,33 @@ struct AddingView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        studyStore.addStudy(studyTime: studyTimePerSession, breakTime: breakTimePerSession, goalCount: goalCount, whatToDo: whatToDo)
-                        isShowAddingView = false
+                        if whatToDo.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
+                            studyStore.addStudy(studyTime: studyTimePerSession, breakTime: breakTimePerSession, goalCount: goalCount, whatToDo: whatToDo)
+                            page = 0
+                            isShowAddingView = false
+                        } else {
+                            haveWhiteSpace.toggle()
+                        }
                     } label: {
                         Text("Add")
                     }
 
                 }
             }
-            .background(Color("background"))
-            .scrollContentBackground(.hidden)
+            .alert("", isPresented: $haveWhiteSpace) {
+                Button("확인") {
+                    //action
+                    print("hello")
+                }
+            } message: {
+                Text("Please enter your plan")
+            }
         }
     }
 }
 
 struct AddAvocado_Previews: PreviewProvider {
     static var previews: some View {
-            AddingView(studyStore: StudyStore(), isShowAddingView: .constant(true))
+        AddingView(studyStore: StudyStore(), page: .constant(0), isShowAddingView: .constant(true))
     }
 }
