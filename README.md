@@ -60,7 +60,7 @@
 
 <br>
 
-# 구현 예정 기능
+# 추가예정 기능
 
 - 타이머 기능
     - 설정한 학습율을 달성하면 타이머를 통해 휴식 시간을 알려줌
@@ -68,3 +68,7 @@
     - 월 별로 통계를 만들어서 학습량을 파악할 수 있음
 
 <br>
+
+# 라이센스
+
+Avocado is available under the MIT license. See the [LICENSE](https://github.com/APPSCHOOL1-REPO/mydiary-20230110-personal-16/blob/main/LICENSE.md) file for more info.
